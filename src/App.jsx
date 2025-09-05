@@ -11,6 +11,9 @@ export default function App() {
   const [intervalId, setIntervalId] = useState(null);
   const videoRef = useRef(null);
 
+  // ✅ Use env variable for backend API (configured in Vercel/Render)
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
   // Start Recording
   const startRecording = async () => {
     try {
@@ -72,22 +75,21 @@ export default function App() {
     a.click();
   };
 
-  // Upload recording to backend (Cloudinary)
+  // Upload recording to backend (Cloudinary/Render)
   const uploadRecording = async () => {
     if (recordedChunks.length === 0) return;
     const blob = new Blob(recordedChunks, { type: "video/webm" });
     const formData = new FormData();
-    formData.append("file", blob, "recording.webm"); // Cloudinary expects "file"
+    formData.append("file", blob, "recording.webm");
 
     try {
-      const res = await axios.post("http://localhost:5000/upload", formData, {
+      const res = await axios.post(`${API_BASE_URL}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       alert("Upload successful!");
       console.log("Upload response:", res.data);
 
-      // Update uploaded recordings list
       setRecordingsList((prev) => [
         { id: Date.now(), filename: "recording.webm", url: res.data.url },
         ...prev,
