@@ -11,8 +11,10 @@ export default function App() {
   const [intervalId, setIntervalId] = useState(null);
   const videoRef = useRef(null);
 
-  // ✅ Use env variable for backend API (configured in Vercel/Render)
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  // ✅ Normalize base URL (remove trailing slash if exists)
+  const API_BASE_URL = (
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+  ).replace(/\/$/, "");
 
   // Start Recording
   const startRecording = async () => {
@@ -75,7 +77,7 @@ export default function App() {
     a.click();
   };
 
-  // Upload recording to backend (Cloudinary/Render)
+  // Upload recording to backend
   const uploadRecording = async () => {
     if (recordedChunks.length === 0) return;
     const blob = new Blob(recordedChunks, { type: "video/webm" });
